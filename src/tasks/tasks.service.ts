@@ -1,19 +1,16 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Cron } from '@nestjs/schedule';
+import { BookByenService } from "../book-byen/book-byen.service";
 
 @Injectable()
 export class TasksService {
-  private value = false;
-  private readonly logger = new Logger(TasksService.name);
+  constructor(
+    private readonly logger: Logger,
+    private readonly bookByen: BookByenService
+  ) {}
 
   @Cron('* * * * * *')
   syncBookByen() {
-    if (this.value) {
-      this.logger.debug('Sync book byen');
-    }
-    else {
-      this.logger.debug('Skipping sync book byen');
-    }
-    this.value = !this.value;
+    this.bookByen.syncAllSlides();
   }
 }

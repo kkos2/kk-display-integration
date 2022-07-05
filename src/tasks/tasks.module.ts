@@ -1,7 +1,8 @@
-import { Module } from '@nestjs/common';
+import {Logger, Module} from '@nestjs/common';
 import { TasksService } from './tasks.service';
+import { BookByenService } from "../book-byen/book-byen.service";
 
 @Module({
-  providers: [TasksService],
+  providers: [TasksService, Logger, BookByenService],
 })
 export class TasksModule {}
