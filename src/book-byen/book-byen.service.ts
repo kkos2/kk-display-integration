@@ -7,8 +7,8 @@ export class BookByenService {
     private readonly displayApi: DisplayApiService
   ) {}
 
-  syncAllSlides(): void {
+  async syncAllSlides(): Promise<void> {
     this.logger.debug('syncAllSlides');
-    this.displayApi.fetchSlides();
+    const slides = await this.displayApi.fetchSlides();
   }
 }

@@ -10,7 +10,7 @@ export class TasksService {
   ) {}
 
   @Cron('* * * * * *')
-  syncBookByen() {
+  syncBookByen(): void {
     this.bookByen.syncAllSlides();
   }
 }
