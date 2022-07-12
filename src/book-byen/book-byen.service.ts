@@ -1,14 +1,48 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { DisplayApiService } from "../display-api/display-api.service";
+import { HttpService } from "@nestjs/axios";
+import { Slide } from "../display-api/types";
+import { lastValueFrom } from "rxjs";
+import { SlideSlideInput } from "../display-api-client";
+
 @Injectable()
 export class BookByenService {
   constructor(
     private readonly logger: Logger,
+    private readonly httpService: HttpService,
     private readonly displayApi: DisplayApiService
   ) {}
+
+  private readonly baseUrl = 'https://api.bookbyen.dk/api/Bookings/Infoscreen';
 
   async syncAllSlides(): Promise<void> {
     this.logger.debug('syncAllSlides');
     const slides = await this.displayApi.fetchSlides();
+    console.log(slides);
+    slides.forEach(slide => {
+      this.syncSlide(slide);
+    });
   }
+
+  async syncSlide(slide: Slide): Promise<void> {
+    const jsonData = await this.fetchBookByenData(slide.content.feedId);
+    if (Array.isArray(jsonData)) {
+      slide.content.jsonData = JSON.stringify(jsonData);
+      const id = slide['@id'].split('/').slice(-1)[0];
+      this.displayApi.updateSlide(id, slide as unknown as SlideSlideInput);
+    }
+  }
+
+  async fetchBookByenData(feedId: number): Promise<Array<any>|void> {
+    try {
+      const response = await lastValueFrom(this.httpService.get(this.baseUrl, {params: {locationId: feedId}}));
+      return response.data;
+    } catch (error) {
+      this.logger.error(
+        '❌ ~ error fetching book byen feed with id: ' + feedId,
+        error.message,
+      );
+    }
+  }
+
 }

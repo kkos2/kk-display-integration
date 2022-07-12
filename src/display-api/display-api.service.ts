@@ -3,10 +3,12 @@ import {
   AuthenticationApi,
   Configuration,
   SlidesApi, SlideSlideInput,
-  SlideSlideInputJsonld, TemplatesApi,
+  SlideSlideInputJsonld,
+  TemplatesApi,
   Token
 } from "../display-api-client";
 import { Agent } from "https";
+import { Slide } from "./types";
 @Injectable()
 export class DisplayApiService {
   constructor(
@@ -73,7 +75,7 @@ export class DisplayApiService {
         return response.data['hydra:member'][0]['@id'];
       }
     } catch (error) {
-      console.log(
+      this.logger.error(
         '❌ ~ error fetching template id for title: ' + title,
         error.message,
       );
@@ -89,10 +91,11 @@ export class DisplayApiService {
    *
    * @param {string} type the type of slide to fetch
    */
-  async fetchSlides(type?: string): Promise<Array<SlideSlideInput>> {
+  async fetchSlides(type?: string): Promise<Array<Slide>> {
     const templateId = await this.getTemplateId(type);
+    const slides = [];
     if (!templateId) {
-      return [];
+      return slides;
     }
 
     try {
@@ -101,7 +104,6 @@ export class DisplayApiService {
       let page = 1;
       const itemsPerPage = '24';
       let fetch = true;
-      const slides = [];
       while (fetch) {
         const response = await slideApi.getV1Slides(page, itemsPerPage);
         response.data['hydra:member'].forEach(slide => {
@@ -115,26 +117,25 @@ export class DisplayApiService {
         else {
           page += 1;
         }
-        console.log(slides);
       }
     } catch (error) {
-      console.log(
+      this.logger.error(
         '❌ ~ error fetching slides',
         error.message,
       );
     }
 
-    this.logger.debug('fetchSlides');
+    return slides;
   }
 
-  async updateSlide(id: string, slideData: SlideSlideInputJsonld): Promise<void> {
+  async updateSlide(id: string, slideData: SlideSlideInput): Promise<void> {
     try {
       const config = await this.getAuthenticatedConfig();
       const slideApi = new SlidesApi(config);
 
       await slideApi.putV1SlideId(id, slideData);
     } catch (error) {
-      console.log(
+      this.logger.error(
         '❌ ~ error updating slide with id: ' + id,
         JSON.stringify(slideData),
         error.message,
