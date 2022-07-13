@@ -14,19 +14,26 @@ export class BookByenService {
   ) {}
 
   private readonly baseUrl = 'https://api.bookbyen.dk/api/Bookings/Infoscreen';
+  private readonly slideType = 'book-byen';
 
   async syncAllSlides(): Promise<void> {
     this.logger.debug('syncAllSlides');
-    const slides = await this.displayApi.fetchSlides();
-    console.log(slides);
+    const slides = await this.displayApi.fetchSlides(this.slideType);
     slides.forEach(slide => {
       this.syncSlide(slide);
     });
   }
 
   async syncSlide(slide: Slide): Promise<void> {
-    const jsonData = await this.fetchBookByenData(slide.content.feedId);
+    let jsonData = await this.fetchBookByenData(slide.content.feedId);
     if (Array.isArray(jsonData)) {
+      jsonData = jsonData.filter(item => item.isDeleted !== true);
+      if (slide.content.facilityId) {
+        jsonData = jsonData.filter(item => item.facility.id === parseInt(slide.content.facilityId, 10));
+      }
+      if (slide.content.areaId) {
+        jsonData = jsonData.filter(item => item.facility.area.id === parseInt(slide.content.areaId, 10));
+      }
       slide.content.jsonData = JSON.stringify(jsonData);
       const id = slide['@id'].split('/').slice(-1)[0];
       this.displayApi.updateSlide(id, slide as unknown as SlideSlideInput);

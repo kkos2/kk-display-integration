@@ -2,8 +2,8 @@ import { Injectable, Logger } from '@nestjs/common';
 import {
   AuthenticationApi,
   Configuration,
-  SlidesApi, SlideSlideInput,
-  SlideSlideInputJsonld,
+  SlidesApi,
+  SlideSlideInput,
   TemplatesApi,
   Token
 } from "../display-api-client";
