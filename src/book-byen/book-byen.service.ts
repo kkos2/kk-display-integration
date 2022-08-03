@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger } from "@nestjs/common";
 import { DisplayApiService } from "../display-api/display-api.service";
 import { HttpService } from "@nestjs/axios";
 import { Slide } from "../display-api/types";
@@ -13,11 +13,11 @@ export class BookByenService {
     private readonly displayApi: DisplayApiService
   ) {}
 
-  private readonly baseUrl = 'https://api.bookbyen.dk/api/Bookings/Infoscreen';
-  private readonly slideType = 'book-byen';
+  private readonly baseUrl = "https://api.bookbyen.dk/api/Bookings/Infoscreen";
+  private readonly slideType = "book-byen";
 
   async syncAllSlides(): Promise<void> {
-    this.logger.debug('syncAllSlides');
+    this.logger.debug("syncAllSlides");
     const slides = await this.displayApi.fetchSlides(this.slideType);
     slides.forEach(slide => {
       this.syncSlide(slide);
@@ -27,29 +27,33 @@ export class BookByenService {
   async syncSlide(slide: Slide): Promise<void> {
     let jsonData = await this.fetchBookByenData(slide.content.feedId);
     if (Array.isArray(jsonData)) {
-      jsonData = jsonData.filter(item => item.isDeleted !== true);
+      jsonData = jsonData.filter((item) => item.isDeleted !== true);
       if (slide.content.facilityId) {
-        jsonData = jsonData.filter(item => item.facility.id === parseInt(slide.content.facilityId, 10));
+        jsonData = jsonData.filter(
+          (item) => item.facility.id === parseInt(slide.content.facilityId, 10)
+        );
       }
       if (slide.content.areaId) {
-        jsonData = jsonData.filter(item => item.facility.area.id === parseInt(slide.content.areaId, 10));
+        jsonData = jsonData.filter(
+          (item) => item.facility.area.id === parseInt(slide.content.areaId, 10)
+        );
       }
       slide.content.jsonData = JSON.stringify(jsonData);
-      const id = slide['@id'].split('/').slice(-1)[0];
-      this.displayApi.updateSlide(id, slide as unknown as SlideSlideInput);
+      const id = slide["@id"].split("/").slice(-1)[0];
     }
   }
 
-  async fetchBookByenData(feedId: number): Promise<Array<any>|void> {
+  async fetchBookByenData(feedId: number): Promise<Array<any> | void> {
     try {
-      const response = await lastValueFrom(this.httpService.get(this.baseUrl, {params: {locationId: feedId}}));
+      const response = await lastValueFrom(
+        this.httpService.get(this.baseUrl, { params: { locationId: feedId } })
+      );
       return response.data;
     } catch (error) {
       this.logger.error(
-        '❌ ~ error fetching book byen feed with id: ' + feedId,
-        error.message,
+        "❌ ~ error fetching book byen feed with id: " + feedId,
+        error.message
       );
     }
   }
-
 }

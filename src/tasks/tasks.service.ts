@@ -1,5 +1,5 @@
-import { Injectable, Logger } from '@nestjs/common';
-import { Cron } from '@nestjs/schedule';
+import { Injectable, Logger } from "@nestjs/common";
+import { Cron } from "@nestjs/schedule";
 import { BookByenService } from "../book-byen/book-byen.service";
 
 @Injectable()
