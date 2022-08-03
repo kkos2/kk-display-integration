@@ -73,10 +73,7 @@ export class DisplayApiService {
         return response.data["hydra:member"][0]["@id"];
       }
     } catch (error) {
-      this.logger.error(
-        "❌ ~ error fetching template id for title: " + title,
-        error.message
-      );
+      this.logger.error("❌ ~ error fetching template id for title: " + title, error.message);
     }
   }
 

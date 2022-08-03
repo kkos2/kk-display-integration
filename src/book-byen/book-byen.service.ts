@@ -13,15 +13,16 @@ export class BookByenService {
     private readonly displayApi: DisplayApiService
   ) {}
 
+  // TODO, move this out into configuration.
   private readonly baseUrl = "https://api.bookbyen.dk/api/Bookings/Infoscreen";
   private readonly slideType = "book-byen";
 
   async syncAllSlides(): Promise<void> {
     this.logger.debug("syncAllSlides");
     const slides = await this.displayApi.fetchSlides(this.slideType);
-    slides.forEach(slide => {
-      this.syncSlide(slide);
-    });
+    for (const slide of slides) {
+      await this.syncSlide(slide);
+    }
   }
 
   async syncSlide(slide: Slide): Promise<void> {
@@ -40,6 +41,7 @@ export class BookByenService {
       }
       slide.content.jsonData = JSON.stringify(jsonData);
       const id = slide["@id"].split("/").slice(-1)[0];
+      await this.displayApi.updateSlide(id, slide as unknown as SlideSlideInput);
     }
   }
 
@@ -50,10 +52,7 @@ export class BookByenService {
       );
       return response.data;
     } catch (error) {
-      this.logger.error(
-        "❌ ~ error fetching book byen feed with id: " + feedId,
-        error.message
-      );
+      this.logger.error("❌ ~ error fetching book byen feed with id: " + feedId, error.message);
     }
   }
 }
