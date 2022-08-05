@@ -18,7 +18,7 @@ export class BookByenService {
   private readonly slideType = "book-byen";
 
   async syncAllSlides(): Promise<void> {
-    this.logger.debug("syncAllSlides");
+    this.logger.debug("BookByenService::syncAllSlides");
     const slides = await this.displayApi.fetchSlides(this.slideType);
     for (const slide of slides) {
       await this.syncSlide(slide);
