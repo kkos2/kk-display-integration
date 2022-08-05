@@ -1,5 +1,5 @@
-import { Logger, Module } from '@nestjs/common';
-import { DisplayApiService } from './display-api.service';
+import { Logger, Module } from "@nestjs/common";
+import { DisplayApiService } from "./display-api.service";
 
 @Module({
   providers: [DisplayApiService, Logger],

@@ -1,0 +1,56 @@
+# PR Workflow steps that performs build, test and linting check on any
+# PR related actions.
+
+on: pull_request
+name: Review
+jobs:
+  display-integration-build:
+    name: KK Integration build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+      - name: install
+        run: npm install
+      - name: Build production assets
+        run: npm run build
+      - name: install
+        run: npm install
+
+      - name: Build production assets
+        run: npm run build
+  templates-coding-standards:
+    name: KK Integration coding standards
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+      - name: install
+        run: npm install
+      # Run eslint - we mirror the flags specified by lint:check in package.json
+      # into the "eslint_flags" property.
+      - uses: reviewdog/action-eslint@v1
+        with:
+          reporter: github-check
+          eslint_flags: '{src,apps,libs,test}/**/*.ts'
+
+  templates-tests:
+    name: KK Integration tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v3
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+      - name: install
+        run: npm install
+
+      - name: Run tests
+        run: npm run test

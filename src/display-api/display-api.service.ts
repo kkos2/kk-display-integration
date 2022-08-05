@@ -1,25 +1,23 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger } from "@nestjs/common";
 import {
   AuthenticationApi,
   Configuration,
   SlidesApi,
   SlideSlideInput,
   TemplatesApi,
-  Token
+  Token,
 } from "../display-api-client";
 import { Agent } from "https";
 import { Slide } from "./types";
 @Injectable()
 export class DisplayApiService {
-  constructor(
-    private readonly logger: Logger
-  ) {}
+  constructor(private readonly logger: Logger) {}
 
   /**
    * @TODO: How to make this configurable?
    */
   configuration = new Configuration({
-    basePath: 'https://displayapiservice.local.itkdev.dk',
+    basePath: "https://displayapiservice.local.itkdev.dk",
     baseOptions: {
       // Axios won't accept our mkcert certs for now - so lets just disable
       // cert verification.
@@ -39,8 +37,8 @@ export class DisplayApiService {
      * @TODO: How to make this configurable?
      */
     const credentials = {
-      email: 'admin@example.com',
-      password: 'password',
+      email: "admin@example.com",
+      password: "password",
     };
 
     const response = await authentication.postCredentialsItem(credentials);
@@ -66,19 +64,16 @@ export class DisplayApiService {
    *
    * @param title The title of the template to fetch the id for.
    */
-  async getTemplateId(title: string): Promise<string|void> {
+  async getTemplateId(title: string): Promise<string | void> {
     try {
       const config = await this.getAuthenticatedConfig();
       const templatesApi = new TemplatesApi(config);
-      const response = await templatesApi.getV1Templates(1, '1', title);
-      if (response.data['hydra:member'].length === 1) {
-        return response.data['hydra:member'][0]['@id'];
+      const response = await templatesApi.getV1Templates(1, "1", title);
+      if (response.data["hydra:member"].length === 1) {
+        return response.data["hydra:member"][0]["@id"];
       }
     } catch (error) {
-      this.logger.error(
-        '❌ ~ error fetching template id for title: ' + title,
-        error.message,
-      );
+      this.logger.error("❌ ~ error fetching template id for title: " + title, error.message);
     }
   }
 
@@ -102,27 +97,23 @@ export class DisplayApiService {
       const config = await this.getAuthenticatedConfig();
       const slideApi = new SlidesApi(config);
       let page = 1;
-      const itemsPerPage = '24';
+      const itemsPerPage = "24";
       let fetch = true;
       while (fetch) {
         const response = await slideApi.getV1Slides(page, itemsPerPage);
-        response.data['hydra:member'].forEach(slide => {
-          if (slide.templateInfo['@id'] === templateId) {
+        response.data["hydra:member"].forEach((slide) => {
+          if (slide.templateInfo["@id"] === templateId) {
             slides.push(slide);
           }
         });
-        if (response.data['hydra:member'].length < itemsPerPage) {
+        if (response.data["hydra:member"].length < itemsPerPage) {
           fetch = false;
-        }
-        else {
+        } else {
           page += 1;
         }
       }
     } catch (error) {
-      this.logger.error(
-        '❌ ~ error fetching slides',
-        error.message,
-      );
+      this.logger.error("❌ ~ error fetching slides", error.message);
     }
 
     return slides;
@@ -136,11 +127,10 @@ export class DisplayApiService {
       await slideApi.putV1SlideId(id, slideData);
     } catch (error) {
       this.logger.error(
-        '❌ ~ error updating slide with id: ' + id,
+        "❌ ~ error updating slide with id: " + id,
         JSON.stringify(slideData),
-        error.message,
+        error.message
       );
     }
   }
-
 }
