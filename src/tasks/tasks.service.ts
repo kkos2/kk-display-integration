@@ -11,13 +11,13 @@ export class TasksService {
     private readonly twentyThreeVideo: TwentyThreeVideoService
   ) {}
 
-  @Cron("* * * * * *")
+  @Cron("5/15 * * * *")
   async syncBookByen(): Promise<void> {
     await this.bookByen.syncAllSlides();
     return;
   }
 
-  @Cron("* * * * * *")
+  @Cron("0/15 * * * *")
   async syncTwentyThreeVideo(): Promise<void> {
     await this.twentyThreeVideo.syncAllSlides();
     return;
