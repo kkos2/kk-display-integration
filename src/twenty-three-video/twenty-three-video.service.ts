@@ -59,7 +59,11 @@ export class TwentyThreeVideoService {
       if (data.status !== "ok") {
         this.logger.error("❌ ~ error fetching kk video list did not get ok status back");
       }
-      return data.photos.map((item) => item.photo_id);
+      if (!Array.isArray(data.photos)) {
+        return [];
+      }
+      // Return all photo items with a photo_id.
+      return data.photos.filter((item) => !!item.photo_id).map((item) => item.photo_id);
     } catch (error) {
       this.logger.error("❌ ~ error fetching kk video list", error);
     }
