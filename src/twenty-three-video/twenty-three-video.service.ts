@@ -53,11 +53,15 @@ export class TwentyThreeVideoService {
 
   async fetchTwentyThreeVideoList(params: TwentyThreeVideoListParams): Promise<Array<any> | void> {
     try {
-      const data = await lastValueFrom(this.httpService.get(this.baseUrl, { params })).then(
-        (response) => response.data
-      );
+      type VideoListResponseType = {
+        status: string;
+        photos: [{ photo_id: string }];
+      };
+      const data = await lastValueFrom(
+        this.httpService.get<VideoListResponseType>(this.baseUrl, { params })
+      ).then((response) => response.data);
       if (data.status !== "ok") {
-        this.logger.error("❌ ~ error fetching kk video list did not get ok status back");
+        this.logger.error("Fetching kk video list did not get ok status back");
       }
       if (!Array.isArray(data.photos)) {
         return [];
@@ -65,7 +69,7 @@ export class TwentyThreeVideoService {
       // Return all photo items with a photo_id.
       return data.photos.filter((item) => !!item.photo_id).map((item) => item.photo_id);
     } catch (error) {
-      this.logger.error("❌ ~ error fetching kk video list", error);
+      this.logger.error("Fetching kk video list", error);
     }
   }
 }

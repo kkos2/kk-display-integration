@@ -52,7 +52,7 @@ export class BookByenService {
       );
       return response.data;
     } catch (error) {
-      this.logger.error("❌ ~ error fetching book byen feed with id: " + feedId, error.message);
+      this.logger.error("Error fetching book byen feed with id: " + feedId, error.message);
     }
   }
 }
