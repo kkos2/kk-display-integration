@@ -9,15 +9,13 @@ import {
 } from "../display-api-client";
 import { Agent } from "https";
 import { Slide } from "./types";
+import { IntegrationConfigService } from "../integration-config/integration-config.service";
 @Injectable()
 export class DisplayApiService {
-  constructor(private readonly logger: Logger) {}
+  constructor(private readonly logger: Logger, private readonly config: IntegrationConfigService) {}
 
-  /**
-   * @TODO: How to make this configurable?
-   */
   configuration = new Configuration({
-    basePath: "https://displayapiservice.local.itkdev.dk",
+    basePath: this.config.displayApiEndpoint,
     baseOptions: {
       // Axios won't accept our mkcert certs for now - so lets just disable
       // cert verification.
