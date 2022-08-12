@@ -1,12 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
-import { z, ZodError } from "zod";
-
-const IntegrationConfiguration = z.object({
-  displayApiEndpoint: z.string(),
-});
-
-type IntegrationConfiguration = z.infer<typeof IntegrationConfiguration>;
+import { ZodError } from "zod";
+import { IntegrationConfiguration } from "./integration-config.types";
 
 @Injectable()
 export class IntegrationConfigService {
