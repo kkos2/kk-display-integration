@@ -9,15 +9,13 @@ import {
 } from "../display-api-client";
 import { Agent } from "https";
 import { Slide } from "./types";
+import { IntegrationConfigService } from "../integration-config/integration-config.service";
 @Injectable()
 export class DisplayApiService {
-  constructor(private readonly logger: Logger) {}
+  constructor(private readonly logger: Logger, private readonly config: IntegrationConfigService) {}
 
-  /**
-   * @TODO: How to make this configurable?
-   */
   configuration = new Configuration({
-    basePath: "https://displayapiservice.local.itkdev.dk",
+    basePath: this.config.displayApiEndpoint,
     baseOptions: {
       // Axios won't accept our mkcert certs for now - so lets just disable
       // cert verification.
@@ -69,11 +67,13 @@ export class DisplayApiService {
       const config = await this.getAuthenticatedConfig();
       const templatesApi = new TemplatesApi(config);
       const response = await templatesApi.getV1Templates(1, "1", title);
-      if (response.data["hydra:member"].length === 1) {
-        return response.data["hydra:member"][0]["@id"];
+      // TODO - figure out why this is not typed.
+      const data = response.data as any;
+      if (data["hydra:member"].length === 1) {
+        return data["hydra:member"][0]["@id"];
       }
     } catch (error) {
-      this.logger.error("❌ ~ error fetching template id for title: " + title, error.message);
+      this.logger.error("Error fetching template id for title: " + title, (error as Error).message);
     }
   }
 
@@ -86,9 +86,9 @@ export class DisplayApiService {
    *
    * @param {string} type the type of slide to fetch
    */
-  async fetchSlides(type?: string): Promise<Array<Slide>> {
+  async fetchSlides(type: string): Promise<Array<Slide>> {
     const templateId = await this.getTemplateId(type);
-    const slides = [];
+    const slides: any[] = [];
     if (!templateId) {
       return slides;
     }
@@ -101,19 +101,21 @@ export class DisplayApiService {
       let fetch = true;
       while (fetch) {
         const response = await slideApi.getV1Slides(page, itemsPerPage);
-        response.data["hydra:member"].forEach((slide) => {
+        // TODO, figure out how to avoid any.
+        const data = response.data as any;
+        data["hydra:member"].forEach((slide: any) => {
           if (slide.templateInfo["@id"] === templateId) {
             slides.push(slide);
           }
         });
-        if (response.data["hydra:member"].length < itemsPerPage) {
+        if (data["hydra:member"].length < itemsPerPage) {
           fetch = false;
         } else {
           page += 1;
         }
       }
     } catch (error) {
-      this.logger.error("❌ ~ error fetching slides", error.message);
+      this.logger.error("Error fetching slides", error.message);
     }
 
     return slides;
@@ -127,7 +129,7 @@ export class DisplayApiService {
       await slideApi.putV1SlideId(id, slideData);
     } catch (error) {
       this.logger.error(
-        "❌ ~ error updating slide with id: " + id,
+        "Error updating slide with id: " + id,
         JSON.stringify(slideData),
         error.message
       );

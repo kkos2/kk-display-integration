@@ -6,4 +6,5 @@ import { SlideSlide } from "../display-api-client";
  */
 export interface Slide extends Omit<SlideSlide, "content"> {
   content: any;
+  "@id": string;
 }
