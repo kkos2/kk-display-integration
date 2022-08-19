@@ -30,16 +30,7 @@ export class DisplayApiService {
    */
   async getAdminToken(): Promise<Token> {
     const authentication = new AuthenticationApi(this.configuration);
-
-    /**
-     * @TODO: How to make this configurable?
-     */
-    const credentials = {
-      email: "admin@example.com",
-      password: "password",
-    };
-
-    const response = await authentication.postCredentialsItem(credentials);
+    const response = await authentication.postCredentialsItem(this.config.displayApiCredentials);
 
     return response.data;
   }
@@ -115,7 +106,7 @@ export class DisplayApiService {
         }
       }
     } catch (error) {
-      this.logger.error("Error fetching slides", error.message);
+      this.logger.error("Error fetching slides", (error as Error).message);
     }
 
     return slides;
@@ -131,7 +122,7 @@ export class DisplayApiService {
       this.logger.error(
         "Error updating slide with id: " + id,
         JSON.stringify(slideData),
-        error.message
+        (error as Error).message
       );
     }
   }

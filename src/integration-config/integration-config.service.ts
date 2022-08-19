@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { ZodError } from "zod";
-import { IntegrationConfiguration } from "./integration-config.types";
+import { displayApiCredentials, IntegrationConfiguration } from "./integration-config.types";
 
 // Try to fetch config from environment and fail if we can't.
 function getOrThrow<T>(configService: ConfigService, key: string): T | undefined {
@@ -23,6 +23,10 @@ export class IntegrationConfigService {
     // without doing a validation at this point.
     const partialConfig: Partial<IntegrationConfiguration> = {
       displayApiEndpoint: getOrThrow(configService, "DISPLAY_API_ENDPOINT"),
+      displayApiCredentials: {
+        email: getOrThrow(configService, "DISPLAY_API_EMAIL") || "",
+        password: getOrThrow(configService, "DISPLAY_API_PASSWORD") || "",
+      },
     };
 
     // Then validate it or crash.
@@ -34,6 +38,10 @@ export class IntegrationConfigService {
     } catch (error) {
       throw new Error("Unable to parse configuration: " + (error as ZodError).message);
     }
+  }
+
+  get displayApiCredentials(): displayApiCredentials {
+    return this.configuration.displayApiCredentials;
   }
 
   get displayApiEndpoint(): string {
