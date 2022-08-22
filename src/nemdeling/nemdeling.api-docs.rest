@@ -1,0 +1,30 @@
+### POST request to create service messages
+POST localhost:3000/api/v1/nemdeling/service-messages
+Content-Type: application/json
+
+[
+  {
+    "title": "Service message test",
+    "text": "<p>An important service message.</p>",
+    "screens": [
+      "screen_1",
+      "screen_2",
+      "screen_3"
+    ]
+  },
+  {
+    "title": "INFO: screen_1",
+    "text": "<p>Denne besked er kun til screen_1 test</p>",
+    "screens": ["screen_1"]
+  },
+  {
+    "title": "INFO: screen_2",
+    "text": "<p>Denne besked er kun til screen_2 test</p>",
+    "screens": ["screen_2"]
+  },
+  {
+    "title": "INFO: screen_4",
+    "text": "<p>Denne besked er kun til screen_3 test</p>",
+    "screens": ["screen_4"]
+  }
+]

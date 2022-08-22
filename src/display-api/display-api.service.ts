@@ -2,14 +2,21 @@ import { Injectable, Logger } from "@nestjs/common";
 import {
   AuthenticationApi,
   Configuration,
+  PlaylistPlaylistJsonld,
+  PlaylistsApi,
+  PutV1PlaylistSlideIdRequestInner,
+  ScreensApi,
+  ScreenScreenJsonld,
   SlidesApi,
   SlideSlideInput,
+  SlideSlideJsonld,
   TemplatesApi,
   Token,
 } from "../display-api-client";
 import { Agent } from "https";
-import { Slide } from "./types";
+import { CreateSlideInput, PlaylistSlide, PlaylistSlideResult, Slide } from "./types";
 import { IntegrationConfigService } from "../integration-config/integration-config.service";
+
 @Injectable()
 export class DisplayApiService {
   constructor(private readonly logger: Logger, private readonly config: IntegrationConfigService) {}
@@ -124,6 +131,156 @@ export class DisplayApiService {
         JSON.stringify(slideData),
         (error as Error).message
       );
+    }
+  }
+
+  /**
+   * Fetches all screens.
+   */
+  async fetchScreens(): Promise<ScreenScreenJsonld[]> {
+    try {
+      const config = await this.getAuthenticatedConfig();
+      const screensApi = new ScreensApi(config);
+      const screens: ScreenScreenJsonld[] = [];
+
+      let page = 1;
+      const itemsPerPage = "24";
+      let fetch = true;
+      while (fetch) {
+        const response = await screensApi.getV1Screens(page, itemsPerPage);
+        // TODO, figure out how to avoid any.
+        const data = response.data as any;
+        data["hydra:member"].forEach((screen: ScreenScreenJsonld) => {
+          screens.push(screen);
+        });
+        if (data["hydra:member"].length < itemsPerPage) {
+          fetch = false;
+        } else {
+          page += 1;
+        }
+      }
+
+      return screens;
+    } catch (error) {
+      this.logger.error("Error fetching screens", (error as Error).message);
+    }
+
+    return [];
+  }
+
+  /**
+   * Gets a playlist by name.
+   *
+   * @param {string} name the name of the playlist to get
+   */
+  async getPlaylistByName(name: string): Promise<PlaylistPlaylistJsonld | null> {
+    try {
+      const config = await this.getAuthenticatedConfig();
+      const playlistsApi = new PlaylistsApi(config);
+
+      const response = await playlistsApi.getV1Playlists(1, 1, name);
+      const data = response.data as any;
+      const playlist = data["hydra:member"].shift();
+      if (playlist && playlist["@id"]) {
+        return playlist;
+      }
+    } catch (error) {
+      this.logger.error(`Error getting playlist with name "${name}"`, (error as Error).message);
+    }
+
+    return null;
+  }
+
+  /**
+   * Gets the slides in a given playlist.
+   *
+   * @param {string} playlistId the ID of the playlist to get slides for
+   */
+  async getPlaylistSlides(playlistId: string): Promise<PlaylistSlide[]> {
+    const config = await this.getAuthenticatedConfig();
+    const playlistsApi = new PlaylistsApi(config);
+    const slides: PlaylistSlide[] = [];
+
+    let page = 1;
+    const itemsPerPage = "24";
+    let fetch = true;
+    while (fetch) {
+      const response = await playlistsApi.getV1PlaylistSlideId(playlistId, page, itemsPerPage);
+      // TODO, figure out how to avoid any.
+      const data = response.data as any;
+      data["hydra:member"].forEach((member: PlaylistSlideResult) => {
+        slides.push({
+          content: member.slide.content,
+          "@id": member.slide["@id"],
+          weight: member.weight || 0,
+        });
+      });
+      if (data["hydra:member"].length < itemsPerPage) {
+        fetch = false;
+      } else {
+        page += 1;
+      }
+    }
+
+    return slides;
+  }
+
+  /**
+   * Saves slides on a playlist.
+   *
+   * @param {string} playlistId the ID of the playlist to update
+   * @param {PutV1PlaylistSlideIdRequestInner[]} slides the slides to save on the playlist
+   */
+  async savePlaylistSlides(
+    playlistId: string,
+    slides: PutV1PlaylistSlideIdRequestInner[]
+  ): Promise<void> {
+    try {
+      const config = await this.getAuthenticatedConfig();
+      const playlistsApi = new PlaylistsApi(config);
+
+      await playlistsApi.putV1PlaylistSlideId(playlistId, slides);
+    } catch (error) {
+      this.logger.error(
+        `Error saving Playlist slides for playlist ${playlistId}`,
+        (error as Error).message
+      );
+    }
+  }
+
+  /**
+   * Creates a new slide.
+   *
+   * @param {SlideSlideJsonld} data the slide data
+   */
+  async createSlide(data: CreateSlideInput): Promise<SlideSlideJsonld | null> {
+    try {
+      const config = await this.getAuthenticatedConfig();
+      const slidesApi = new SlidesApi(config);
+      const response = await slidesApi.createV1Slides(data as any);
+      return response.data;
+    } catch (error) {
+      this.logger.error(
+        `Error creating slide with data ${JSON.stringify(data)}`,
+        (error as Error).message
+      );
+    }
+
+    return null;
+  }
+
+  /**
+   * Deletes a slide.
+   *
+   * @param {string} slideId the slide ID
+   */
+  async deleteSlide(slideId: string): Promise<void> {
+    try {
+      const config = await this.getAuthenticatedConfig();
+      const slidesApi = new SlidesApi(config);
+      await slidesApi.deleteV1SlideId(slideId);
+    } catch (error) {
+      this.logger.error(`Error deleting slide ${slideId}`, (error as Error).message);
     }
   }
 }
