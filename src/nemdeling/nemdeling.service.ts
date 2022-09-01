@@ -47,15 +47,35 @@ export class NemDelingService {
     return new Promise((resolve, reject) => {
       // If slide is existing, weight may need to be updated, but that is done later.
       const existingSlide = playlistSlides.find(
-        (item) => JSON.stringify(slide.content) === JSON.stringify(item.content)
+        (item) => slide.content.externalId === item.content.externalId
       );
       if (existingSlide) {
-        resolve({
-          slide: existingSlide["@id"].replace("/v1/slides/", ""),
-          weight: weight,
-        });
+        const existingSlideId = existingSlide["@id"].replace("/v1/slides/", "");
+        if (JSON.stringify(slide.content) === JSON.stringify(existingSlide.content)) {
+          resolve({
+            slide: existingSlideId,
+            weight: weight,
+          });
+        }
+        // Content has changed, we need to update the existing slide.
+        else {
+          this.displayApiService
+            .updateSlide(existingSlideId, {
+              ...existingSlide.slide,
+              content: slide.content,
+            })
+            .then(() => {
+              resolve({
+                slide: existingSlideId,
+                weight: weight,
+              });
+            })
+            .catch((err) => {
+              reject(err);
+            });
+        }
       }
-      // If slide does not exist we always create + delete.
+      // Create slide if it doesn't exist.
       else {
         this.displayApiService
           .createSlide({
@@ -111,7 +131,11 @@ export class NemDelingService {
       const newSlides = await Promise.all(promises);
       // Delete slides which doesn't exist in the new list.
       playlistSlides.forEach((oldSlide) => {
-        if (newSlides.filter((newSlide) => newSlide.slide === oldSlide["@id"]).length === 0) {
+        if (
+          newSlides.filter(
+            (newSlide) => newSlide.slide === oldSlide["@id"].replace("/v1/slides/", "")
+          ).length === 0
+        ) {
           void this.displayApiService.deleteSlide(oldSlide["@id"].replace("/v1/slides/", ""));
         }
       });

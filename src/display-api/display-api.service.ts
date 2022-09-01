@@ -210,6 +210,7 @@ export class DisplayApiService {
       const data = response.data as any;
       data["hydra:member"].forEach((member: PlaylistSlideResult) => {
         slides.push({
+          slide: member.slide,
           content: member.slide.content,
           "@id": member.slide["@id"],
           weight: member.weight || 0,

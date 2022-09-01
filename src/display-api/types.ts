@@ -7,6 +7,7 @@ import { PlaylistSlidePlaylistSlideJsonld, SlideSlide } from "../display-api-cli
 export interface Slide extends Omit<SlideSlide, "content"> {
   content: any;
   "@id": string;
+  slide: any;
 }
 
 export interface PlaylistSlide extends Slide {

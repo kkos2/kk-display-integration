@@ -1,30 +1,46 @@
 ### POST request to create service messages
 POST localhost:3000/api/v1/nemdeling/service-messages
-Content-Type: application/json
+Content-Type: application/xml
 
-[
-  {
-    "title": "Service message test",
-    "text": "<p>An important service message.</p>",
-    "screens": [
-      "screen_1",
-      "screen_2",
-      "screen_3"
-    ]
-  },
-  {
-    "title": "INFO: screen_1",
-    "text": "<p>Denne besked er kun til screen_1 test</p>",
-    "screens": ["screen_1"]
-  },
-  {
-    "title": "INFO: screen_2",
-    "text": "<p>Denne besked er kun til screen_2 test</p>",
-    "screens": ["screen_2"]
-  },
-  {
-    "title": "INFO: screen_4",
-    "text": "<p>Denne besked er kun til screen_3 test</p>",
-    "screens": ["screen_4"]
-  }
-]
+<result is_array="true">
+    <item>
+        <field_display_institution is_array="true">
+            <item>hus1</item>
+        </field_display_institution>
+        <nid>4</nid>
+        <title_field>test213-new6</title_field>
+        <field_background_color>#2e4f2a</field_background_color>
+        <body>dette er en test - new</body>
+        <field_os2_display_list_spot is_array="true">
+            <item>screen_1</item>
+            <item>screen_2</item>
+        </field_os2_display_list_spot>
+    </item>
+    <item>
+        <field_display_institution is_array="true">
+            <item>
+            </item>
+        </field_display_institution>
+        <nid>5</nid>
+        <title_field>test4324234</title_field>
+        <field_background_color>#ffffff</field_background_color>
+        <body>dette er en test</body>
+        <field_os2_display_list_spot is_array="true">
+            <item>
+            </item>
+        </field_os2_display_list_spot>
+    </item>
+    <item>
+        <field_display_institution is_array="true">
+            <item>
+            </item>
+        </field_display_institution>
+        <nid>6</nid>
+        <title_field>Test title 1</title_field>
+        <field_background_color>#ffffff</field_background_color>
+        <body>Test test</body>
+        <field_os2_display_list_spot is_array="true">
+            <item>screen_1</item>
+        </field_os2_display_list_spot>
+    </item>
+</result>

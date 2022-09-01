@@ -14,8 +14,7 @@ import {
   ApiTags,
 } from "@nestjs/swagger";
 import { NemDelingService } from "./nemdeling.service";
-import { ServiceMessage } from "./nemdeling.models";
-import { NemDelingResult, NemdelingSlide } from "./types";
+import { ServiceMessageBody, NemDelingResult, NemdelingSlide } from "./types";
 import { ApiServiceUnavailableResponse } from "@nestjs/swagger/dist/decorators/api-response.decorator";
 
 type RequestNormalizerResult = { [key: string]: NemdelingSlide[] };
@@ -32,7 +31,7 @@ export class NemDelingController {
   /**
    * The template type to use when creating service message slides.
    */
-  private readonly serviceMessageTemplateType = "Billede og tekst";
+  private readonly serviceMessageTemplateType = "Servicemeddelelse";
 
   @Post("service-messages")
   @ApiCreatedResponse({
@@ -45,8 +44,8 @@ export class NemDelingController {
   @ApiInternalServerErrorResponse({
     description: "Application not able to process request.",
   })
-  @ApiBody({ type: [ServiceMessage] })
-  async serviceMessage(@Body() body: ServiceMessage[]): Promise<string> {
+  @ApiBody({ type: String })
+  async serviceMessage(@Body() body: ServiceMessageBody): Promise<string> {
     const results: NemDelingResult[] = [];
 
     if (
@@ -91,7 +90,7 @@ export class NemDelingController {
    * Converts the service messages request body to Display API friendly format.
    */
   async serviceMessagesDataMapper(
-    body: ServiceMessage[]
+    body: ServiceMessageBody
   ): Promise<{ result: RequestNormalizerResult; notFound: string[] }> {
     const templateId = await this.displayApiService.getTemplateId(this.serviceMessageTemplateType);
     if (!templateId) {
@@ -112,8 +111,13 @@ export class NemDelingController {
       }
     });
 
-    body.forEach((item) => {
-      item.screens.forEach((screenName) => {
+    body.result.item.forEach((item) => {
+      const screens = item.field_os2_display_list_spot[0].item;
+      if (!screens.length) {
+        return;
+      }
+
+      screens.forEach((screenName) => {
         if (!result[screenName]) {
           notFound.push(screenName);
           return;
@@ -122,8 +126,11 @@ export class NemDelingController {
         result[screenName].push({
           templateId,
           content: {
-            title: item.title,
-            text: item.text,
+            externalId: item.nid[0],
+            title: item.title_field[0],
+            text: item.body[0],
+            displayInstitution: item.field_display_institution[0].item[0],
+            bgColor: item.field_background_color[0],
           },
         });
       });
