@@ -5,6 +5,7 @@ import {
   Logger,
   Post,
   ServiceUnavailableException,
+  UseGuards,
 } from "@nestjs/common";
 import { DisplayApiService } from "../display-api/display-api.service";
 import {
@@ -16,6 +17,7 @@ import {
 import { NemDelingService } from "./nemdeling.service";
 import { ServiceMessageBody, NemDelingResult, NemdelingSlide } from "./types";
 import { ApiServiceUnavailableResponse } from "@nestjs/swagger/dist/decorators/api-response.decorator";
+import { AuthBasicGuard } from "src/auth/auth-basic.guard";
 
 type RequestNormalizerResult = { [key: string]: NemdelingSlide[] };
 
@@ -34,6 +36,7 @@ export class NemDelingController {
   private readonly serviceMessageTemplateType = "Servicemeddelelse";
 
   @Post("service-messages")
+  @UseGuards(AuthBasicGuard)
   @ApiCreatedResponse({
     description: "The service message was synced.",
     type: String,
