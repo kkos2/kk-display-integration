@@ -52,6 +52,10 @@ export class NemDelingController {
     const results: NemDelingResult[] = [];
 
     if (
+      // We don't want two processes to update slides at the same time. To
+      // build a failsafe into the system, we reset after skipping 4 times. We
+      // never expect this to be an issue, but in case something bad happens we
+      // don't want this to get completely stuck.
       this.nemDelingService.serviceMessagesAreSyncing > 0 &&
       this.nemDelingService.serviceMessagesAreSyncing < 5
     ) {
@@ -59,7 +63,7 @@ export class NemDelingController {
       throw new ServiceUnavailableException("Service messages are already being synced.");
     }
 
-    this.nemDelingService.serviceMessagesAreSyncing++;
+    this.nemDelingService.serviceMessagesAreSyncing = 1;
 
     const data = await this.serviceMessagesDataMapper(body);
     for (const [screenName, slides] of Object.entries(data.result)) {
@@ -86,7 +90,7 @@ export class NemDelingController {
 
     this.nemDelingService.serviceMessagesAreSyncing = 0;
     this.logger.log("Service messages result: " + JSON.stringify(results));
-    return "OK";
+    return "OK: " + JSON.stringify(results);
   }
 
   /**

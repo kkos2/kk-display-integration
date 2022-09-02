@@ -44,6 +44,7 @@ export class NemDelingService {
     weight: number,
     playlistSlides: PlaylistSlide[]
   ): Promise<PutV1PlaylistSlideIdRequestInner> {
+    const logger = this.logger;
     return new Promise((resolve, reject) => {
       // If slide is existing, weight may need to be updated, but that is done later.
       const existingSlide = playlistSlides.find(
@@ -72,6 +73,7 @@ export class NemDelingService {
             })
             .catch((err) => {
               reject(err);
+              logger.error("Error update slide with id: " + existingSlide.slide);
             });
         }
       }
@@ -118,7 +120,7 @@ export class NemDelingService {
       playlistSlides = await this.displayApiService.getPlaylistSlides(playlistId);
     } catch (error) {
       this.logger.error(
-        `❌ ~ error fetching slides from playlist with id: "${playlist["@id"]}"`,
+        `Error fetching slides from playlist with id: "${playlist["@id"]}"`,
         (error as Error).message
       );
       return false;
@@ -144,7 +146,7 @@ export class NemDelingService {
       return true;
     } catch (error) {
       this.logger.error(
-        `❌ ~ error updating the playlist "${playlist["@id"]}"`,
+        `Error updating the playlist "${playlist["@id"]}"`,
         (error as Error).message
       );
       return false;

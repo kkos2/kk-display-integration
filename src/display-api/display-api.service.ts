@@ -95,6 +95,7 @@ export class DisplayApiService {
       const config = await this.getAuthenticatedConfig();
       const slideApi = new SlidesApi(config);
       let page = 1;
+      // The page size doesn't matter, as we will loop through all pages.
       const itemsPerPage = "24";
       let fetch = true;
       while (fetch) {
@@ -144,6 +145,7 @@ export class DisplayApiService {
       const screens: ScreenScreenJsonld[] = [];
 
       let page = 1;
+      // The page size doesn't matter, as we will loop through all pages.
       const itemsPerPage = "24";
       let fetch = true;
       while (fetch) {
@@ -202,6 +204,7 @@ export class DisplayApiService {
     const slides: PlaylistSlide[] = [];
 
     let page = 1;
+    // The page size doesn't matter, as we will loop through all pages.
     const itemsPerPage = "24";
     let fetch = true;
     while (fetch) {
