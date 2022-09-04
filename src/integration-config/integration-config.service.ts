@@ -1,7 +1,11 @@
 import { Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { ZodError } from "zod";
-import { basicAuthCredentials, displayApiCredentials, IntegrationConfiguration } from "./integration-config.types";
+import {
+  basicAuthCredentials,
+  displayApiCredentials,
+  IntegrationConfiguration,
+} from "./integration-config.types";
 
 // Try to fetch config from environment and fail if we can't.
 function getOrThrow<T>(configService: ConfigService, key: string): T | undefined {
