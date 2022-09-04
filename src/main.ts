@@ -21,6 +21,11 @@ async function bootstrap() {
     );
   }
 
+  // Platform.sh hosting, add support for setting a global path prefix.
+  if (process.env.INTEGRATION_PATH_PREFIX) {
+    app.setGlobalPrefix(process.env.INTEGRATION_PATH_PREFIX);
+  }
+
   const config = new DocumentBuilder()
     .setTitle("KK Display Integration")
     .setDescription("API documentation for the KK Display Integration")
