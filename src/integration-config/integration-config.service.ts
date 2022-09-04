@@ -1,7 +1,11 @@
 import { Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { ZodError } from "zod";
-import { displayApiCredentials, IntegrationConfiguration } from "./integration-config.types";
+import {
+  basicAuthCredentials,
+  displayApiCredentials,
+  IntegrationConfiguration,
+} from "./integration-config.types";
 
 // Try to fetch config from environment and fail if we can't.
 function getOrThrow<T>(configService: ConfigService, key: string): T | undefined {
@@ -27,6 +31,10 @@ export class IntegrationConfigService {
         email: getOrThrow(configService, "DISPLAY_API_EMAIL") || "",
         password: getOrThrow(configService, "DISPLAY_API_PASSWORD") || "",
       },
+      basicAuthCredentials: {
+        username: configService.get("HTTP_BASIC_USER") || "",
+        password: configService.get("HTTP_BASIC_PASS") || "",
+      },
     };
 
     // Then validate it or crash.
@@ -46,5 +54,9 @@ export class IntegrationConfigService {
 
   get displayApiEndpoint(): string {
     return this.configuration.displayApiEndpoint;
+  }
+
+  get basicAuthCredentials(): basicAuthCredentials {
+    return this.configuration.basicAuthCredentials;
   }
 }
