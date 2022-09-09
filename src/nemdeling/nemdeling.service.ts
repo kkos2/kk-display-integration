@@ -3,6 +3,8 @@ import { DisplayApiService } from "../display-api/display-api.service";
 import { PlaylistPlaylistJsonld, PutV1PlaylistSlideIdRequestInner } from "../display-api-client";
 import { NemdelingSlide } from "./types";
 import { PlaylistSlide } from "../display-api/types";
+import { format } from "date-fns";
+import daLocale from "date-fns/locale/da";
 
 @Injectable()
 export class NemDelingService {
@@ -21,6 +23,15 @@ export class NemDelingService {
   public serviceMessagesAreSyncing = 0;
 
   /**
+   * If events are syncing.
+   *
+   * 0 means that no sync is in progress.
+   * A value greater than 0 means that syncing is in progress, the number is the
+   * number og requests that has been skipped.
+   */
+  public eventsAreSyncing = 0;
+
+  /**
    * Gets a service message playlist from a given screen name.
    *
    * @param {string} screenName the name of the screen to get the playlist for.
@@ -29,6 +40,16 @@ export class NemDelingService {
     screenName: string
   ): Promise<PlaylistPlaylistJsonld | null> {
     const playlistName = `service_message_${screenName}`;
+    return await this.displayApiService.getPlaylistByName(playlistName);
+  }
+
+  /**
+   * Gets an event playlist from a given screen name.
+   *
+   * @param {string} screenName the name of the screen to get the playlist for.
+   */
+  async getEventPlaylistFromScreenName(screenName: string): Promise<PlaylistPlaylistJsonld | null> {
+    const playlistName = `event_${screenName}`;
     return await this.displayApiService.getPlaylistByName(playlistName);
   }
 
@@ -47,9 +68,12 @@ export class NemDelingService {
     const logger = this.logger;
     return new Promise((resolve, reject) => {
       // If slide is existing, weight may need to be updated, but that is done later.
-      const existingSlide = playlistSlides.find(
-        (item) => slide.content.externalId === item.content.externalId
-      );
+      const existingSlide = playlistSlides.find((item) => {
+        if (!slide.content.externalId) {
+          return JSON.stringify(slide.content) === JSON.stringify(item.content);
+        }
+        return slide.content.externalId === item.content.externalId;
+      });
       if (existingSlide) {
         const existingSlideId = existingSlide["@id"].replace("/v1/slides/", "");
         if (JSON.stringify(slide.content) === JSON.stringify(existingSlide.content)) {
@@ -63,6 +87,9 @@ export class NemDelingService {
           this.displayApiService
             .updateSlide(existingSlideId, {
               ...existingSlide.slide,
+              templateInfo: {
+                "@id": slide.templateId,
+              },
               content: slide.content,
             })
             .then(() => {
@@ -151,5 +178,19 @@ export class NemDelingService {
       );
       return false;
     }
+  }
+
+  /**
+   * Formats an event date.
+   *
+   * @param {string} dateString the date string to format.
+   * @return {string} the formatted date.
+   */
+  formatEventDate(dateString: string): string {
+    const [day, month, year] = dateString.split(".");
+    const date = new Date(Date.UTC(Number(year), Number(month), Number(day), 0, 0, 0));
+    return format(date, "EEEE 'd'. d. MMMM", { locale: daLocale }).replace(/^\w/, (letter) =>
+      letter.toUpperCase()
+    );
   }
 }

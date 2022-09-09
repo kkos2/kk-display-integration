@@ -29,6 +29,7 @@
     "@nestjs/schedule": "^2.0.1",
     "@nestjs/swagger": "^5.2.1",
     "@types/express-xml-bodyparser": "^0.3.2",
+    "date-fns": "^2.29.2",
     "express-basic-auth": "^1.2.1",
     "express-xml-bodyparser": "^0.3.0",
     "passport": "^0.6.0",

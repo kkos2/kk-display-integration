@@ -44,3 +44,61 @@ Content-Type: application/xml
         </field_os2_display_list_spot>
     </item>
 </result>
+
+### POST request to create events
+POST localhost:3000/api/v1/nemdeling/events
+Content-Type: application/xml
+
+<result is_array="true">
+    <item>
+        <startdate is_array="true">
+            <item>21.10.2022</item>
+        </startdate>
+        <enddate is_array="true">
+            <item>21.10.2022</item>
+        </enddate>
+        <time is_array="true">
+            <item>19:00 til 20:30</item>
+        </time>
+        <Nid>140</Nid>
+        <billede is_array="true">
+            <item>
+                <img src="https://union.kk.dk/sites/default/files/2022-08/IMG_20220507_0036%201920x1080.jpg" alt="Yacarandá besøger Union 21. oktober 2022" height="1080" width="1920" title="" />
+            </item>
+        </billede>
+        <title>Yacarandá (BRA/BOL/ARG) at Union</title>
+        <field_teaser>Elegante og skrøbelige melodier, der blander brasiliansk folklore, klassisk musik og afrobrasilianske rytmer.</field_teaser>
+        <screen is_array="true">
+            <item>copenhagen_test</item>
+            <item>screen_3</item>
+            <item>screen_4</item>
+        </screen>
+        <host>Uni på højen</host>
+        <bgColor>#333542</bgColor>
+    </item>
+    <item>
+        <startdate is_array="true">
+            <item>02.09.2022</item>
+        </startdate>
+        <enddate is_array="true">
+            <item>02.09.2022</item>
+        </enddate>
+        <time is_array="true">
+            <item>12:00 til 12:00</item>
+        </time>
+        <Nid>62</Nid>
+        <billede is_array="true">
+            <item>
+                <img src="https://union.kk.dk/sites/default/files/2021-12/DanielLiversage_Union_Kulturnat-47_1200x554_0.jpg" alt="Fuse Jam hver søndag i Union" height="554" width="1200" title="" />
+            </item>
+        </billede>
+        <title>Fuse Point Jam </title>
+        <field_teaser>Beginner friendly dance workshop and open dancefloor.</field_teaser>
+        <screen is_array="true">
+            <item>copenhagen_test</item>
+            <item>screen_2</item>
+        </screen>
+        <host></host>
+        <bgColor>test</bgColor>
+    </item>
+</result>
