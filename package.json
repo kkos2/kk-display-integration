@@ -32,6 +32,7 @@
     "date-fns": "^2.29.2",
     "express-basic-auth": "^1.2.1",
     "express-xml-bodyparser": "^0.3.0",
+    "jwt-decode": "^3.1.2",
     "passport": "^0.6.0",
     "passport-http": "^0.3.0",
     "reflect-metadata": "0.1.13",
