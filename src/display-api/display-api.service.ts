@@ -14,6 +14,7 @@ import {
   Token,
 } from "../display-api-client";
 import { Agent } from "https";
+import jwtDecode, { JwtPayload } from "jwt-decode";
 import { CreateSlideInput, PlaylistSlide, PlaylistSlideResult, Slide } from "./types";
 import { IntegrationConfigService } from "../integration-config/integration-config.service";
 
@@ -33,13 +34,26 @@ export class DisplayApiService {
   });
 
   /**
+   * Save admin token, to reduce token generations if we still have an
+   * unexpired token.
+   */
+  public adminToken: Token = {};
+
+  /**
    * Get admin token used for making requests.
    */
   async getAdminToken(): Promise<Token> {
+    if (this?.adminToken.token) {
+      const decoded = jwtDecode<JwtPayload>(this.adminToken.token);
+      if (decoded.exp && decoded.exp > Date.now() / 1000 + 60) {
+        return this.adminToken;
+      }
+    }
+
     const authentication = new AuthenticationApi(this.configuration);
     const response = await authentication.postCredentialsItem(this.config.displayApiCredentials);
-
-    return response.data;
+    this.adminToken = response.data;
+    return this.adminToken;
   }
 
   /**
@@ -47,7 +61,6 @@ export class DisplayApiService {
    */
   async getAuthenticatedConfig(): Promise<Configuration> {
     const configWithAuth = { ...this.configuration } as Configuration;
-
     const tokenData = await this.getAdminToken();
 
     configWithAuth.accessToken = tokenData.token;

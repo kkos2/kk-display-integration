@@ -20,3 +20,26 @@ export type ServiceMessageBody = {
     }>;
   };
 };
+
+export type EventBody = {
+  result: {
+    item: Array<{
+      startdate: Array<{ item: string[] }>;
+      enddate: Array<{ item: string[] }>;
+      time: Array<{ item: string[] }>;
+      nid: string[];
+      billede: Array<{
+        item: Array<{
+          img: Array<{
+            $: { src: string; alt: string; height: string; width: string; title: string };
+          }>;
+        }>;
+      }>;
+      title: string[];
+      field_teaser: string[];
+      host: string[];
+      bgcolor: string[];
+      screen: Array<{ item: string[] }>;
+    }>;
+  };
+};
