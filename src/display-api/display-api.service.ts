@@ -45,7 +45,7 @@ export class DisplayApiService {
   async getAdminToken(): Promise<Token> {
     if (this?.adminToken.token) {
       const decoded = jwtDecode<JwtPayload>(this.adminToken.token);
-      if (decoded.exp && decoded.exp > (Date.now() / 1000 + 60)) {
+      if (decoded.exp && decoded.exp > Date.now() / 1000 + 60) {
         return this.adminToken;
       }
     }
