@@ -242,6 +242,10 @@ export class NemDelingController {
           notFound.push(screenName);
           return;
         }
+        let backgroundColor = "";
+        if (item.background_color && item.background_color[0]) {
+          backgroundColor = item.background_color[0];
+        }
 
         result[screenName].push({
           templateId,
@@ -252,7 +256,7 @@ export class NemDelingController {
             date: this.nemDelingService.formatEventDate(item.startdate[0].item[0]),
             time: `kl. ${item.time[0].item[0]}`,
             image: item.billede[0].item[0].img[0].$.src ?? null,
-            bgColor: item.bgcolor[0],
+            bgColor: backgroundColor,
           },
         });
       });

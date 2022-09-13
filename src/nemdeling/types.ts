@@ -38,7 +38,7 @@ export type EventBody = {
       title: string[];
       field_teaser: string[];
       host: string[];
-      bgcolor: string[];
+      background_color?: string[];
       screen: Array<{ item: string[] }>;
     }>;
   };
