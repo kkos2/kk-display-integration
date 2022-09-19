@@ -313,6 +313,10 @@ export class NemDelingController {
         return;
       }
 
+      const [startTime, endTime] = item.time[0].item[0].split(" til ");
+      const startDate = this.nemDelingService.formatEventDate(item.startdate[0].item[0]);
+      const endDate = this.nemDelingService.formatEventDate(item.enddate[0].item[0]);
+
       screens.forEach((screenName) => {
         if (!result[screenName]) {
           notFound.push(screenName);
@@ -322,10 +326,6 @@ export class NemDelingController {
         if (item.background_color && item.background_color[0]) {
           backgroundColor = item.background_color[0];
         }
-
-        const [startTime, endTime] = item.time[0].item[0].split(" til ");
-        const startDate = this.nemDelingService.formatEventDate(item.startdate[0].item[0]);
-        const endDate = this.nemDelingService.formatEventDate(item.enddate[0].item[0]);
 
         result[screenName].push({
           templateId,
