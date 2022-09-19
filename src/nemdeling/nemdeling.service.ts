@@ -32,6 +32,15 @@ export class NemDelingService {
   public eventsAreSyncing = 0;
 
   /**
+   * If event lists are syncing.
+   *
+   * 0 means that no sync is in progress.
+   * A value greater than 0 means that syncing is in progress, the number is the
+   * number of requests that has been skipped.
+   */
+  public eventListsAreSyncing = 0;
+
+  /**
    * Gets a service message playlist from a given screen name.
    *
    * @param {string} screenName the name of the screen to get the playlist for.
@@ -50,6 +59,18 @@ export class NemDelingService {
    */
   async getEventPlaylistFromScreenName(screenName: string): Promise<PlaylistPlaylistJsonld | null> {
     const playlistName = `event_${screenName}`;
+    return await this.displayApiService.getPlaylistByName(playlistName);
+  }
+
+  /**
+   * Gets an event list playlist from a given screen name.
+   *
+   * @param {string} screenName the name of the screen to get the playlist for.
+   */
+  async getEventListPlaylistFromScreenName(
+    screenName: string
+  ): Promise<PlaylistPlaylistJsonld | null> {
+    const playlistName = `event_list_${screenName}`;
     return await this.displayApiService.getPlaylistByName(playlistName);
   }
 

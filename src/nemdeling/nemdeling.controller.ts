@@ -40,6 +40,11 @@ export class NemDelingController {
    */
   private readonly eventTemplateType = "event";
 
+  /**
+   * The template type to use when creating event list slides.
+   */
+  private readonly eventListTemplateType = "Event List";
+
   @Post("service-messages")
   @UseGuards(AuthBasicGuard)
   @ApiCreatedResponse({
@@ -204,6 +209,77 @@ export class NemDelingController {
     return "OK: " + JSON.stringify(results);
   }
 
+  @Post("event-lists")
+  @UseGuards(AuthBasicGuard)
+  @ApiCreatedResponse({
+    description: "The event lists were synced.",
+    type: String,
+  })
+  @ApiServiceUnavailableResponse({
+    description: "Application is busy processing.",
+  })
+  @ApiInternalServerErrorResponse({
+    description: "Application not able to process request.",
+  })
+  @ApiBody({ type: String })
+  async eventList(@Body() body: EventBody): Promise<string> {
+    const results: NemDelingResult[] = [];
+
+    const templateId = await this.displayApiService.getTemplateId(this.eventListTemplateType);
+    if (!templateId) {
+      throw new InternalServerErrorException(
+        `No template ID found for ${this.eventListTemplateType}`
+      );
+    }
+
+    // We don't want two processes to update slides at the same time. To
+    // build a failsafe into the system, we reset after skipping 4 times. We
+    // never expect this to be an issue, but in case something bad happens we
+    // don't want this to get completely stuck.
+    if (
+      this.nemDelingService.eventListsAreSyncing > 0 &&
+      this.nemDelingService.eventListsAreSyncing < 5
+    ) {
+      this.nemDelingService.eventListsAreSyncing++;
+      throw new ServiceUnavailableException("Event lists are already being synced.");
+    }
+
+    this.nemDelingService.eventListsAreSyncing = 1;
+
+    const data = await this.eventsDataMapper(body);
+    for (const [screenName, slides] of Object.entries(data.result)) {
+      const playlist = await this.nemDelingService.getEventListPlaylistFromScreenName(screenName);
+      if (!playlist) {
+        continue;
+      }
+
+      // Populate "jsonData" with the content from each event in the list.
+      const slide: NemdelingSlide = {
+        templateId,
+        content: {
+          jsonData: JSON.stringify(slides.map((item) => item.content)),
+        },
+      };
+
+      const result = await this.nemDelingService.syncPlaylist(playlist, [slide]);
+      results.push({
+        name: screenName,
+        status: result ? "success" : "error",
+      });
+    }
+
+    data.notFound.forEach((screenName) => {
+      results.push({
+        name: screenName,
+        status: "not_found",
+      });
+    });
+
+    this.nemDelingService.eventListsAreSyncing = 0;
+    this.logger.log("Event lists result: " + JSON.stringify(results));
+    return "OK: " + JSON.stringify(results);
+  }
+
   /**
    * Converts the events request body to Display API friendly format.
    */
@@ -237,6 +313,10 @@ export class NemDelingController {
         return;
       }
 
+      const [startTime, endTime] = item.time[0].item[0].split(" til ");
+      const startDate = this.nemDelingService.formatEventDate(item.startdate[0].item[0]);
+      const endDate = this.nemDelingService.formatEventDate(item.enddate[0].item[0]);
+
       screens.forEach((screenName) => {
         if (!result[screenName]) {
           notFound.push(screenName);
@@ -253,8 +333,8 @@ export class NemDelingController {
             title: item.title[0],
             subTitle: item.field_teaser[0],
             host: item.host[0],
-            date: this.nemDelingService.formatEventDate(item.startdate[0].item[0]),
-            time: `kl. ${item.time[0].item[0]}`,
+            startDate: `${startDate} kl. ${startTime}`,
+            endDate: startDate !== endDate ? `${endDate} kl. ${endTime}` : "",
             image: item.billede[0].item[0].img[0].$.src ?? null,
             bgColor: backgroundColor,
           },
