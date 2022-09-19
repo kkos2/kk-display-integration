@@ -36,7 +36,7 @@ export class NemDelingService {
    *
    * 0 means that no sync is in progress.
    * A value greater than 0 means that syncing is in progress, the number is the
-   * number og requests that has been skipped.
+   * number of requests that has been skipped.
    */
   public eventListsAreSyncing = 0;
 
