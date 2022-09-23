@@ -128,7 +128,7 @@ export class NemDelingController {
       }
     });
 
-    body.result.item.forEach((item) => {
+    body.result.item?.forEach((item) => {
       const screens = item.field_os2_display_list_spot[0].item;
       if (!screens.length) {
         return;
@@ -223,7 +223,6 @@ export class NemDelingController {
   })
   @ApiBody({ type: String })
   async eventList(@Body() body: EventBody): Promise<string> {
-    this.logger.debug(JSON.stringify(body));
     const results: NemDelingResult[] = [];
 
     const templateId = await this.displayApiService.getTemplateId(this.eventListTemplateType);

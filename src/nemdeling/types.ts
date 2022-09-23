@@ -10,7 +10,7 @@ export type NemDelingResult = {
 
 export type ServiceMessageBody = {
   result: {
-    item: Array<{
+    item?: Array<{
       field_display_institution: Array<{ item: string[] }>;
       nid: string[];
       title_field: string[];
