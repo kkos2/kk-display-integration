@@ -223,6 +223,7 @@ export class NemDelingController {
   })
   @ApiBody({ type: String })
   async eventList(@Body() body: EventBody): Promise<string> {
+    this.logger.debug(JSON.stringify(body));
     const results: NemDelingResult[] = [];
 
     const templateId = await this.displayApiService.getTemplateId(this.eventListTemplateType);
