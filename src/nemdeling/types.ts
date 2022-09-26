@@ -23,7 +23,7 @@ export type ServiceMessageBody = {
 
 export type EventBody = {
   result: {
-    item: Array<{
+    item?: Array<{
       startdate: Array<{ item: string[] }>;
       enddate: Array<{ item: string[] }>;
       time: Array<{ item: string[] }>;

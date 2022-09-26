@@ -303,7 +303,7 @@ export class NemDelingController {
       }
     });
 
-    body.result.item.forEach((item) => {
+    body.result.item?.forEach((item) => {
       if (!item.screen) {
         return;
       }
