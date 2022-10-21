@@ -286,6 +286,30 @@ export class NemDelingController {
   async eventsDataMapper(
     body: EventBody
   ): Promise<{ result: RequestNormalizerResult; notFound: string[] }> {
+    const colorMap: any = {
+      "sort": "#000000",
+      "kk_blaa": "#000c2e",
+      "blaa": "#002CFC",
+      "marine_blaa": "#260EB5",
+      "stoev_blaa": "#025FCC",
+      "moerk_stoev_blaa": "#00519C",
+      "graa_blaa": "#1271A6",
+      "roed": "#C10023",
+      "rust_roed": "#BD3615",
+      "moerk_rosa": "#CD274F",
+      "bordeaux": "#900009",
+      "lilla": "#8332EB",
+      "groen": "#047C6E",
+      "blaa_groen": "#00777E",
+      "brun": "#5E4347",
+      "bronze": "#926B1F",
+      "moerke_graa": "#665E62",
+      "prismen": "#428515",
+      "gmc": "#0c807e",
+      "blaagaarden": "#116B91",
+      "huset": "#c7e2df",
+      "kiby": "#153d44",
+    }
     const templateId = await this.displayApiService.getTemplateId(this.eventTemplateType);
     if (!templateId) {
       throw new InternalServerErrorException(`No template ID found for ${this.eventTemplateType}`);
@@ -323,8 +347,8 @@ export class NemDelingController {
           return;
         }
         let backgroundColor = "";
-        if (item.background_color && item.background_color[0]) {
-          backgroundColor = item.background_color[0];
+        if (item.color && item.color[0] && colorMap[item.color[0]] !== undefined) {
+          backgroundColor = colorMap[item.color[0]];
         }
 
         result[screenName].push({
