@@ -27,8 +27,14 @@ export class BookByenService {
 
   async syncSlide(slide: Slide): Promise<void> {
     let jsonData = await this.fetchBookByenData(slide.content.feedId);
+    const currentHour: number = new Date().getHours();
     if (Array.isArray(jsonData)) {
-      jsonData = jsonData.filter((item) => item.isDeleted !== true);
+      jsonData = jsonData.filter((item) => {
+        if (item.isDeleted === true) {
+          return false;
+        }
+        return new Date(item.end).getHours() > currentHour;
+      });
       if (slide.content.facilityId) {
         jsonData = jsonData.filter(
           (item) => item.facility.id === parseInt(slide.content.facilityId, 10)
