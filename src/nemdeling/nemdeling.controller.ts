@@ -4,6 +4,7 @@ import {
   InternalServerErrorException,
   Logger,
   Post,
+  Req,
   ServiceUnavailableException,
   UseGuards,
 } from "@nestjs/common";
@@ -58,7 +59,8 @@ export class NemDelingController {
     description: "Application not able to process request.",
   })
   @ApiBody({ type: String })
-  async serviceMessage(@Body() body: ServiceMessageBody): Promise<string> {
+  async serviceMessage(@Body() body: ServiceMessageBody, @Req() req: any): Promise<string> {
+    this.logger.debug(req.rawBody);
     const results: NemDelingResult[] = [];
 
     if (
@@ -169,7 +171,8 @@ export class NemDelingController {
     description: "Application not able to process request.",
   })
   @ApiBody({ type: String })
-  async event(@Body() body: EventBody): Promise<string> {
+  async event(@Body() body: EventBody, @Req() req: any): Promise<string> {
+    this.logger.debug(req.rawBody);
     const results: NemDelingResult[] = [];
 
     // We don't want two processes to update slides at the same time. To
@@ -222,7 +225,8 @@ export class NemDelingController {
     description: "Application not able to process request.",
   })
   @ApiBody({ type: String })
-  async eventList(@Body() body: EventBody): Promise<string> {
+  async eventList(@Body() body: EventBody, @Req() req: any): Promise<string> {
+    this.logger.debug(req.rawBody);
     const results: NemDelingResult[] = [];
 
     const templateId = await this.displayApiService.getTemplateId(this.eventListTemplateType);
