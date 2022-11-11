@@ -14,6 +14,9 @@ export const IntegrationConfiguration = z.object({
   displayApiEndpoint: z.string(),
   displayApiCredentials: displayApiCredentials,
   basicAuthCredentials: basicAuthCredentials,
+  kkSlideshowApiEndpoint: z.string(),
+  kkSlideshowApiToken: z.string(),
+  kkSlideshowImageToken: z.string(),
 });
 
 export type IntegrationConfiguration = z.infer<typeof IntegrationConfiguration>;

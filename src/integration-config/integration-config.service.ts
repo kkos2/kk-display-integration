@@ -35,6 +35,9 @@ export class IntegrationConfigService {
         username: configService.get("HTTP_BASIC_USER") || "",
         password: configService.get("HTTP_BASIC_PASS") || "",
       },
+      kkSlideshowApiEndpoint: getOrThrow(configService, "KK_SLIDESHOW_API_ENDPOINT"),
+      kkSlideshowApiToken: getOrThrow(configService, "KK_SLIDESHOW_API_TOKEN"),
+      kkSlideshowImageToken: getOrThrow(configService, "KK_SLIDESHOW_IMAGE_TOKEN"),
     };
 
     // Then validate it or crash.
@@ -58,5 +61,17 @@ export class IntegrationConfigService {
 
   get basicAuthCredentials(): basicAuthCredentials {
     return this.configuration.basicAuthCredentials;
+  }
+
+  get kkSlideshowApiEndpoint(): string {
+    return this.configuration.kkSlideshowApiEndpoint;
+  }
+
+  get kkSlideshowApiToken(): string {
+    return this.configuration.kkSlideshowApiToken;
+  }
+
+  get kkSlideshowImageToken(): string {
+    return this.configuration.kkSlideshowImageToken;
   }
 }
