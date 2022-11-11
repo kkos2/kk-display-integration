@@ -209,7 +209,8 @@ export class NemDelingService {
    */
   formatEventDate(dateString: string): string {
     const [day, month, year] = dateString.split(".");
-    const date = new Date(Date.UTC(Number(year), Number(month), Number(day), 0, 0, 0));
+    // Date needs month as 0-11.
+    const date = new Date(Date.UTC(Number(year), Number(month) - 1, Number(day), 0, 0, 0));
     return format(date, "EEEE 'd'. d. MMMM", { locale: daLocale }).replace(/^\w/, (letter) =>
       letter.toUpperCase()
     );
