@@ -331,44 +331,51 @@ export class NemDelingController {
       }
     });
 
-    body.result.item?.forEach((item) => {
-      if (!item.screen) {
-        return;
-      }
-
-      const screens = item.screen[0].item;
-      if (!screens.length) {
-        return;
-      }
-
-      const [startTime, endTime] = item.time[0].item[0].split(" til ");
-      const startDate = this.nemDelingService.formatEventDate(item.startdate[0].item[0]);
-      const endDate = this.nemDelingService.formatEventDate(item.enddate[0].item[0]);
-
-      screens.forEach((screenName) => {
-        if (!result[screenName]) {
-          notFound.push(screenName);
+    body.result.item
+      // Sort by start date.
+      ?.sort(
+        (a, b) =>
+          parseInt((a.startdate[0].item[0] as string).replace(/\./g, ""), 10) -
+          parseInt((b.startdate[0].item[0] as string).replace(/\./g, ""), 10)
+      )
+      .forEach((item) => {
+        if (!item.screen) {
           return;
         }
-        let backgroundColor = "";
-        if (item.color && item.color[0] && colorMap[item.color[0]] !== undefined) {
-          backgroundColor = colorMap[item.color[0]];
+
+        const screens = item.screen[0].item;
+        if (!screens.length) {
+          return;
         }
 
-        result[screenName].push({
-          templateId,
-          content: {
-            title: item.title[0],
-            subTitle: item.field_teaser[0],
-            host: item.host[0],
-            startDate: `${startDate} kl. ${startTime}`,
-            endDate: startDate !== endDate ? `${endDate} kl. ${endTime}` : "",
-            image: item.billede[0].item[0].img[0].$.src ?? null,
-            bgColor: backgroundColor,
-          },
+        const [startTime, endTime] = item.time[0].item[0].split(" til ");
+        const startDate = this.nemDelingService.formatEventDate(item.startdate[0].item[0]);
+        const endDate = this.nemDelingService.formatEventDate(item.enddate[0].item[0]);
+
+        screens.forEach((screenName) => {
+          if (!result[screenName]) {
+            notFound.push(screenName);
+            return;
+          }
+          let backgroundColor = "";
+          if (item.color && item.color[0] && colorMap[item.color[0]] !== undefined) {
+            backgroundColor = colorMap[item.color[0]];
+          }
+
+          result[screenName].push({
+            templateId,
+            content: {
+              title: item.title[0],
+              subTitle: item.field_teaser[0],
+              host: item.host[0],
+              startDate: `${startDate} kl. ${startTime}`,
+              endDate: startDate !== endDate ? `${endDate} kl. ${endTime}` : "",
+              image: item.billede[0].item[0].img[0].$.src ?? null,
+              bgColor: backgroundColor,
+            },
+          });
         });
       });
-    });
 
     return { result, notFound: [...new Set(notFound)] };
   }
