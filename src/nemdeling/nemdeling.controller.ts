@@ -46,6 +46,11 @@ export class NemDelingController {
    */
   private readonly eventListTemplateType = "Event List";
 
+  /**
+   * The template type to use when creating event theme slides.
+   */
+  private readonly eventThemeTemplateType = "Event Theme";
+
   @Post("service-messages")
   @UseGuards(AuthBasicGuard)
   @ApiCreatedResponse({
@@ -284,6 +289,80 @@ export class NemDelingController {
     return "OK: " + JSON.stringify(results);
   }
 
+  @Post("event-theme")
+  @UseGuards(AuthBasicGuard)
+  @ApiCreatedResponse({
+    description: "The event theme was synced.",
+    type: String,
+  })
+  @ApiServiceUnavailableResponse({
+    description: "Application is busy processing.",
+  })
+  @ApiInternalServerErrorResponse({
+    description: "Application not able to process request.",
+  })
+  @ApiBody({ type: String })
+  async eventTheme(@Body() body: EventBody, @Req() req: any): Promise<string> {
+    this.logger.debug(req.rawBody);
+    const results: NemDelingResult[] = [];
+
+    const templateId = await this.displayApiService.getTemplateId(this.eventThemeTemplateType);
+    if (!templateId) {
+      throw new InternalServerErrorException(
+        `No template ID found for ${this.eventThemeTemplateType}`
+      );
+    }
+
+    // We don't want two processes to update slides at the same time. To
+    // build a failsafe into the system, we reset after skipping 4 times. We
+    // never expect this to be an issue, but in case something bad happens we
+    // don't want this to get completely stuck.
+    if (
+      this.nemDelingService.eventThemesAreSyncing > 0 &&
+      this.nemDelingService.eventThemesAreSyncing < 5
+    ) {
+      this.nemDelingService.eventThemesAreSyncing++;
+      throw new ServiceUnavailableException("Event themes are already being synced.");
+    }
+
+    this.nemDelingService.eventThemesAreSyncing = 1;
+
+    const data = await this.eventsDataMapper(body);
+    for (const [screenName, slides] of Object.entries(data.result)) {
+      const playlist = await this.nemDelingService.getEventThemePlaylistFromScreenName(screenName);
+      if (!playlist) {
+        continue;
+      }
+
+      // Remove time from the start and end date.
+      const newSlides = slides.map((slide) => ({
+        templateId,
+        content: {
+          ...slide.content,
+          startDate: slide.content.startDate.split(" kl. ")[0],
+          endDate: slide.content.endDate.split(" kl. ")[0],
+        },
+      }));
+
+      const result = await this.nemDelingService.syncPlaylist(playlist, newSlides);
+      results.push({
+        name: screenName,
+        status: result ? "success" : "error",
+      });
+    }
+
+    data.notFound.forEach((screenName) => {
+      results.push({
+        name: screenName,
+        status: "not_found",
+      });
+    });
+
+    this.nemDelingService.eventThemesAreSyncing = 0;
+    this.logger.log("Event themes result: " + JSON.stringify(results));
+    return "OK: " + JSON.stringify(results);
+  }
+
   /**
    * Converts the events request body to Display API friendly format.
    */
@@ -313,6 +392,12 @@ export class NemDelingController {
       blaagaarden: "#116B91",
       huset: "#c7e2df",
       kiby: "#153d44",
+    };
+
+    const colorPaletteMap: Record<string, string> = {
+      farvepar1: "farvepar1",
+      farvepar2: "farvepar2",
+      farvepar3: "farvepar3",
     };
     const templateId = await this.displayApiService.getTemplateId(this.eventTemplateType);
     if (!templateId) {
@@ -362,16 +447,34 @@ export class NemDelingController {
             backgroundColor = colorMap[item.color[0]];
           }
 
+          let title = item.title[0];
+          /*
+          Todo - what is the title name.
+          if (item.field_title && item.field_title[0]) {
+            title = item.field_title[0];
+          }
+          */
+
+          let colorPalette = "";
+          if (
+            item.farvepar &&
+            item.farvepar[0] &&
+            colorPaletteMap[item.farvepar[0]] !== undefined
+          ) {
+            colorPalette = colorPaletteMap[item.farvepar[0]];
+          }
+
           result[screenName].push({
             templateId,
             content: {
-              title: item.title[0],
+              title,
               subTitle: item.field_teaser[0],
               host: item.host[0],
               startDate: `${startDate} kl. ${startTime}`,
               endDate: startDate !== endDate ? `${endDate} kl. ${endTime}` : "",
               image: item.billede[0].item[0].img[0].$.src ?? null,
               bgColor: backgroundColor,
+              colorPalette,
             },
           });
         });

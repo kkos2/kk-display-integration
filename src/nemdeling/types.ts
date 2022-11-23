@@ -39,6 +39,7 @@ export type EventBody = {
       field_teaser: string[];
       host: string[];
       color?: string[];
+      farvepar?: string[];
       screen: Array<{ item: string[] }>;
     }>;
   };
