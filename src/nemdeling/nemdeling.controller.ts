@@ -447,7 +447,7 @@ export class NemDelingController {
             backgroundColor = colorMap[item.color[0]];
           }
 
-          let title = item.title[0];
+          const title = item.title[0];
           /*
           Todo - what is the title name.
           if (item.field_title && item.field_title[0]) {

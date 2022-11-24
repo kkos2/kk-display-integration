@@ -55,7 +55,7 @@ export class KkSlideshowService {
 
       const data = result as KkSlideshowXmlResponse;
       data?.EnumerationResults?.Blobs?.shift()?.Blob.forEach((blob) => {
-        images.push(this.baseUrl + folder + "/" + blob.Name[0] + this.imageToken);
+        images.push(this.baseUrl + blob.Name[0] + this.imageToken);
       });
       slide.content.jsonData = JSON.stringify(images);
       const id = slide["@id"].split("/").slice(-1)[0];
@@ -65,9 +65,11 @@ export class KkSlideshowService {
 
   async fetchImageData(folder: string): Promise<string | void> {
     try {
-      const response = await lastValueFrom(
-        this.httpService.get(this.baseUrl + folder + this.apiToken)
-      );
+      let url = this.baseUrl + this.apiToken;
+      if (folder && folder.length > 0) {
+        url += "&prefix=" + folder;
+      }
+      const response = await lastValueFrom(this.httpService.get(url));
       return response.data;
     } catch (error) {
       this.logger.error(
