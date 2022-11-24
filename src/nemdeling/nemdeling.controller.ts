@@ -262,15 +262,19 @@ export class NemDelingController {
         continue;
       }
 
-      // Populate "jsonData" with the content from each event in the list.
-      const slide: NemdelingSlide = {
-        templateId,
-        content: {
-          jsonData: JSON.stringify(slides.map((item) => item.content)),
-        },
-      };
-
-      const result = await this.nemDelingService.syncPlaylist(playlist, [slide]);
+      let result;
+      if (slides.length === 0) {
+        result = await this.nemDelingService.syncPlaylist(playlist, []);
+      } else {
+        // Populate "jsonData" with the content from each event in the list.
+        const slide: NemdelingSlide = {
+          templateId,
+          content: {
+            jsonData: JSON.stringify(slides.map((item) => item.content)),
+          },
+        };
+        result = await this.nemDelingService.syncPlaylist(playlist, [slide]);
+      }
       results.push({
         name: screenName,
         status: result ? "success" : "error",
