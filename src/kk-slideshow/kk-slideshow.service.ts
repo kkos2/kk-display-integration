@@ -54,7 +54,7 @@ export class KkSlideshowService {
       const images: string[] = [];
 
       const data = result as KkSlideshowXmlResponse;
-      data?.EnumerationResults?.Blobs?.shift()?.Blob.forEach((blob) => {
+      data?.EnumerationResults?.Blobs?.shift()?.Blob?.forEach((blob) => {
         images.push(this.baseUrl + blob.Name[0] + this.imageToken);
       });
       slide.content.jsonData = JSON.stringify(images);
