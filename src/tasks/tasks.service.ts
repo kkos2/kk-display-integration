@@ -19,7 +19,7 @@ export class TasksService {
     return;
   }
 
-  @Cron("10/15 * * * * *")
+  @Cron("10/15 * * * * ")
   async syncKkSlideshow(): Promise<void> {
     await this.kkSlideshow.syncAllSlides();
     return;
