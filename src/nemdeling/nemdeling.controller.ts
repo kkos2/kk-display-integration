@@ -138,7 +138,7 @@ export class NemDelingController {
 
     body.result.item?.forEach((item) => {
       const screens = item.field_os2_display_list_spot[0].item;
-      if (!screens.length) {
+      if (!screens || !screens.length) {
         return;
       }
 
@@ -437,7 +437,7 @@ export class NemDelingController {
         }
 
         const screens = item.screen[0].item;
-        if (!screens.length) {
+        if (!screens || !screens.length) {
           return;
         }
 
