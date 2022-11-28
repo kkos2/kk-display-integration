@@ -65,6 +65,7 @@ export class NemDelingController {
   })
   @ApiBody({ type: String })
   async serviceMessage(@Body() body: ServiceMessageBody, @Req() req: any): Promise<string> {
+    this.logger.debug("serviceMessage");
     this.logger.debug(req.rawBody);
     const results: NemDelingResult[] = [];
 
@@ -177,6 +178,7 @@ export class NemDelingController {
   })
   @ApiBody({ type: String })
   async event(@Body() body: EventBody, @Req() req: any): Promise<string> {
+    this.logger.debug("event");
     this.logger.debug(req.rawBody);
     const results: NemDelingResult[] = [];
 
@@ -231,6 +233,7 @@ export class NemDelingController {
   })
   @ApiBody({ type: String })
   async eventList(@Body() body: EventBody, @Req() req: any): Promise<string> {
+    this.logger.debug("eventList");
     this.logger.debug(req.rawBody);
     const results: NemDelingResult[] = [];
 
@@ -307,6 +310,7 @@ export class NemDelingController {
   })
   @ApiBody({ type: String })
   async eventTheme(@Body() body: EventBody, @Req() req: any): Promise<string> {
+    this.logger.debug("eventTheme");
     this.logger.debug(req.rawBody);
     const results: NemDelingResult[] = [];
 
