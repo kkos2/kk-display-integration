@@ -166,56 +166,30 @@ POST localhost:3000/api/v1/nemdeling/event-theme
 Content-Type: application/xml
 
 <result is_array="true">
-<item>
-    <startdate is_array="true">
-        <item>21.10.2022</item>
-    </startdate>
-    <enddate is_array="true">
-        <item>21.10.2022</item>
-    </enddate>
-    <time is_array="true">
-        <item>19:00 til 20:30</item>
-    </time>
-    <Nid>140</Nid>
-    <billede is_array="true">
-        <item>
-            <img src="https://union.kk.dk/sites/default/files/2022-08/IMG_20220507_0036%201920x1080.jpg" alt="Yacarandá besøger Union 21. oktober 2022" height="1080" width="1920" title="" />
-        </item>
-    </billede>
-    <title>Yacarandá (BRA/BOL/ARG) at Union</title>
-    <field_teaser>Elegante og skrøbelige melodier</field_teaser>
-    <screen is_array="true">
-        <item>copenhagen_test</item>
-        <item>screen_3</item>
-        <item>screen_4</item>
-    </screen>
-    <tema>Elegante og skrøbelige melodier</tema>
-    <host>Uni på højen</host>
-    <farvepar>farvepar1</farvepar>
-</item>
-<item>
-    <startdate is_array="true">
-        <item>02.09.2022</item>
-    </startdate>
-    <enddate is_array="true">
-        <item>02.09.2022</item>
-    </enddate>
-    <time is_array="true">
-        <item>12:00 til 12:00</item>
-    </time>
-    <Nid>62</Nid>
-    <billede is_array="true">
-        <item>
-            <img src="https://union.kk.dk/sites/default/files/2022-08/IMG_20220507_0036%201920x1080.jpg" alt="Fuse Jam hver søndag i Union" height="554" width="1200" title="" />
-        </item>
-    </billede>
-    <title>Fuse Point Jam </title>
-    <field_teaser>Beginner friendly dance workshop and open dancefloor.</field_teaser>
-    <screen is_array="true">
-        <item>copenhagen_test</item>
-        <item>screen_2</item>
-    </screen>
-    <host></host>
-    <farvepar>farvepar2</farvepar>
-</item>
+    <item>
+        <startdate is_array="true">
+            <item>29.04.2023</item>
+        </startdate>
+        <enddate is_array="true">
+            <item>30.04.2023</item>
+        </enddate>
+        <time is_array="true">
+            <item>20:00 til 01:00</item>
+        </time>
+        <Nid>82</Nid>
+        <billede is_array="true">
+            <item>
+                <img src="https://basement.kk.dk/sites/default/files/2022-09/web.png" alt="" height="554" width="1200" title="" />
+            </item>
+        </billede>
+        <title>Ian Person (SE)</title>
+        <field_teaser>Ian Person, tidligere guitarist og sangskriver i Union Carbide Productions og The Soundtrack Of Our Lives, udgiver sit andet soloalbum i foråret 2023 og lægger i den forbindelse vejen forbi København.</field_teaser>
+        <screen is_array="true">
+            <item>tematest</item>
+        </screen>
+        <alternativ_titel>Rock</alternativ_titel>
+        <titel>Alternativ titel</titel>
+        <host>Bøhlandet</host>
+        <farvepar>farvepar2</farvepar>
+    </item>
 </result>

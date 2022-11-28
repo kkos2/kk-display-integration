@@ -36,6 +36,7 @@ export type EventBody = {
         }>;
       }>;
       title: string[];
+      alternativ_titel: string[];
       field_teaser: string[];
       host: string[];
       color?: string[];

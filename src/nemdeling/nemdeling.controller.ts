@@ -427,7 +427,7 @@ export class NemDelingController {
           parseInt((a.startdate[0].item[0] as string).replace(/\./g, ""), 10) -
           parseInt((b.startdate[0].item[0] as string).replace(/\./g, ""), 10)
       )
-      .forEach((item) => {
+      ?.forEach((item) => {
         if (!item.screen) {
           return;
         }
@@ -451,13 +451,10 @@ export class NemDelingController {
             backgroundColor = colorMap[item.color[0]];
           }
 
-          const title = item.title[0];
-          /*
-          Todo - what is the title name.
-          if (item.field_title && item.field_title[0]) {
-            title = item.field_title[0];
+          let title = item.title[0];
+          if (item.alternativ_titel && item.alternativ_titel[0]) {
+            title = item.alternativ_titel[0];
           }
-          */
 
           let colorPalette = "";
           if (
