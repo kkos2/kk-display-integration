@@ -428,8 +428,8 @@ export class NemDelingController {
       // Sort by start date.
       ?.sort(
         (a, b) =>
-          parseInt((a.startdate[0].item[0] as string).replace(/\./g, ""), 10) -
-          parseInt((b.startdate[0].item[0] as string).replace(/\./g, ""), 10)
+          parseInt((b.startdate[0].item[0] as string).replace(/\./g, ""), 10) -
+          parseInt((a.startdate[0].item[0] as string).replace(/\./g, ""), 10)
       )
       ?.forEach((item) => {
         if (!item.screen) {
