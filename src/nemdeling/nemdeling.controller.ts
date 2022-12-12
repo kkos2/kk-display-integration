@@ -473,7 +473,6 @@ export class NemDelingController {
             templateId,
             content: {
               title,
-              subTitle: item.field_teaser[0],
               host: item.host[0],
               startDate: `${startDate} kl. ${startTime}`,
               endDate: startDate !== endDate ? `${endDate} kl. ${endTime}` : "",
