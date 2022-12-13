@@ -154,7 +154,6 @@ export class NemDelingController {
             externalId: item.nid[0],
             title: item.title_field[0],
             text: item.body[0],
-            displayInstitution: item.field_display_institution[0].item[0],
             bgColor: item.field_background_color[0],
           },
         });
@@ -416,7 +415,7 @@ export class NemDelingController {
     const notFound: string[] = [];
 
     // Create result object from existing screens, to support cases where
-    // service messages have been deleted, but still exist on a screen.
+    // event slides have been deleted, but still exist on a screen.
     const screensResponse = await this.displayApiService.fetchScreens();
     screensResponse.forEach(({ title }) => {
       if (title) {
@@ -473,6 +472,7 @@ export class NemDelingController {
             templateId,
             content: {
               title,
+              subTitle: item.field_teaser[0],
               host: item.host[0],
               startDate: `${startDate} kl. ${startTime}`,
               endDate: startDate !== endDate ? `${endDate} kl. ${endTime}` : "",
