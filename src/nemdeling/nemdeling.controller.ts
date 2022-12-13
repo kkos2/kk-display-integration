@@ -192,7 +192,7 @@ export class NemDelingController {
 
     this.nemDelingService.eventsAreSyncing = 1;
 
-    const data = await this.eventsDataMapper(body);
+    const data = await this.eventsDataMapper(body, this.eventTemplateType);
     for (const [screenName, slides] of Object.entries(data.result)) {
       const playlist = await this.nemDelingService.getEventPlaylistFromScreenName(screenName);
       if (!playlist) {
@@ -257,7 +257,7 @@ export class NemDelingController {
 
     this.nemDelingService.eventListsAreSyncing = 1;
 
-    const data = await this.eventsDataMapper(body);
+    const data = await this.eventsDataMapper(body, this.eventListTemplateType);
     for (const [screenName, slides] of Object.entries(data.result)) {
       const playlist = await this.nemDelingService.getEventListPlaylistFromScreenName(screenName);
       if (!playlist) {
@@ -334,7 +334,7 @@ export class NemDelingController {
 
     this.nemDelingService.eventThemesAreSyncing = 1;
 
-    const data = await this.eventsDataMapper(body);
+    const data = await this.eventsDataMapper(body, this.eventThemeTemplateType);
     for (const [screenName, slides] of Object.entries(data.result)) {
       const playlist = await this.nemDelingService.getEventThemePlaylistFromScreenName(screenName);
       if (!playlist) {
@@ -374,7 +374,8 @@ export class NemDelingController {
    * Converts the events request body to Display API friendly format.
    */
   async eventsDataMapper(
-    body: EventBody
+    body: EventBody,
+    type: string
   ): Promise<{ result: RequestNormalizerResult; notFound: string[] }> {
     const colorMap: any = {
       sort: "#000000",
@@ -406,9 +407,9 @@ export class NemDelingController {
       farvepar2: "farvepar2",
       farvepar3: "farvepar3",
     };
-    const templateId = await this.displayApiService.getTemplateId(this.eventTemplateType);
+    const templateId = await this.displayApiService.getTemplateId(type);
     if (!templateId) {
-      throw new InternalServerErrorException(`No template ID found for ${this.eventTemplateType}`);
+      throw new InternalServerErrorException(`No template ID found for ${type}`);
     }
 
     const result: RequestNormalizerResult = {};
@@ -467,12 +468,19 @@ export class NemDelingController {
           ) {
             colorPalette = colorPaletteMap[item.farvepar[0]];
           }
+          let subTitle = item.field_teaser[0];
+          if (type === this.eventThemeTemplateType) {
+            subTitle = "";
+            if (item.tema && item.tema[0]) {
+              subTitle = item.tema[0];
+            }
+          }
 
           result[screenName].push({
             templateId,
             content: {
               title,
-              subTitle: item.field_teaser[0],
+              subTitle: subTitle,
               host: item.host[0],
               startDate: `${startDate} kl. ${startTime}`,
               endDate: startDate !== endDate ? `${endDate} kl. ${endTime}` : "",
