@@ -149,6 +149,7 @@ export class KkBibService {
             endDate: differenceInHours(endDate, startDate) > 24 ? this.formatDate(endDate) : "",
             image: item.list_image[0] ?? null,
             date: startDate,
+            bgColor: "#3a6f55",
           },
         });
       });
