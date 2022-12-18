@@ -35,6 +35,7 @@ export class IntegrationConfigService {
         username: configService.get("HTTP_BASIC_USER") || "",
         password: configService.get("HTTP_BASIC_PASS") || "",
       },
+      kkBibApiEndpoint: getOrThrow(configService, "KK_BIB_API_ENDPOINT"),
       kkSlideshowApiEndpoint: getOrThrow(configService, "KK_SLIDESHOW_API_ENDPOINT"),
       kkSlideshowApiToken: getOrThrow(configService, "KK_SLIDESHOW_API_TOKEN"),
       kkSlideshowImageToken: getOrThrow(configService, "KK_SLIDESHOW_IMAGE_TOKEN"),
@@ -61,6 +62,10 @@ export class IntegrationConfigService {
 
   get basicAuthCredentials(): basicAuthCredentials {
     return this.configuration.basicAuthCredentials;
+  }
+
+  get kkBibApiEndpoint(): string {
+    return this.configuration.kkBibApiEndpoint;
   }
 
   get kkSlideshowApiEndpoint(): string {

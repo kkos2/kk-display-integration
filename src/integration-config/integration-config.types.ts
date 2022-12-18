@@ -14,6 +14,7 @@ export const IntegrationConfiguration = z.object({
   displayApiEndpoint: z.string(),
   displayApiCredentials: displayApiCredentials,
   basicAuthCredentials: basicAuthCredentials,
+  kkBibApiEndpoint: z.string(),
   kkSlideshowApiEndpoint: z.string(),
   kkSlideshowApiToken: z.string(),
   kkSlideshowImageToken: z.string(),

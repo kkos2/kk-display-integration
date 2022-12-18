@@ -96,6 +96,22 @@ export class NemDelingService {
   }
 
   /**
+   * Gets a KK Bib playlist from a given screen name.
+   *
+   * Note, right now bib is not handled through nemdeling but with a custom XML
+   * endpoint we fetch ourselves (see kk-bib module). While this doesn't really
+   * belong here, in the future we expect this to be moved to nemdling. So
+   * instead of moving a lot of code around, we have this function here to make
+   * the code simpler to write and maintain.
+   *
+   * @param {string} screenName the name of the screen to get the playlist for.
+   */
+  async getKkBibPlaylistFromScreenName(screenName: string): Promise<PlaylistPlaylistJsonld | null> {
+    const playlistName = `kk_bib_${screenName}`;
+    return await this.displayApiService.getPlaylistByName(playlistName);
+  }
+
+  /**
    * Create slide if it doesn't already exist
    *
    * @param {NemdelingSlide} slide - The slide as it should exist.
