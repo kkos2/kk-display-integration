@@ -442,8 +442,15 @@ export class NemDelingController {
         }
 
         const [startTime, endTime] = item.time[0].item[0].split(" til ");
-        const startDate = this.nemDelingService.formatEventDate(item.startdate[0].item[0]);
-        const endDate = this.nemDelingService.formatEventDate(item.enddate[0].item[0]);
+        let dateFormat = "EEEE 'd'. d. MMMM";
+        if (type === this.eventThemeTemplateType) {
+          dateFormat = "d. MMMM";
+        }
+        const startDate = this.nemDelingService.formatEventDate(
+          item.startdate[0].item[0],
+          dateFormat
+        );
+        const endDate = this.nemDelingService.formatEventDate(item.enddate[0].item[0], dateFormat);
 
         screens.forEach((screenName) => {
           if (!result[screenName]) {

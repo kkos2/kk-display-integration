@@ -244,11 +244,11 @@ export class NemDelingService {
    * @param {string} dateString the date string to format.
    * @return {string} the formatted date.
    */
-  formatEventDate(dateString: string): string {
+  formatEventDate(dateString: string, dateFormat: string): string {
     const [day, month, year] = dateString.split(".");
     // Date needs month as 0-11.
     const date = new Date(Date.UTC(Number(year), Number(month) - 1, Number(day), 0, 0, 0));
-    return format(date, "EEEE 'd'. d. MMMM", { locale: daLocale }).replace(/^\w/, (letter) =>
+    return format(date, dateFormat, { locale: daLocale }).replace(/^\w/, (letter) =>
       letter.toUpperCase()
     );
   }
