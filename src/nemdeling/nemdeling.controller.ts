@@ -153,7 +153,7 @@ export class NemDelingController {
           content: {
             externalId: item.nid[0],
             title: item.title_field[0],
-            text: item.body[0],
+            text: item.body[0] ? item.body[0].replace(/(\\r)?\\n/g, "<br>") : "",
             bgColor: item.field_background_color[0],
           },
         });

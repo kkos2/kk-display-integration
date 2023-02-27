@@ -10,7 +10,7 @@ Content-Type: application/xml
         <nid>4</nid>
         <title_field>test213-new6</title_field>
         <field_background_color>#2e4f2a</field_background_color>
-        <body>dette er en test - new</body>
+        <body>This is a short\n test\r\nThis is a newline\r\nThis is another line\n, this should be on it's own line.</body>
         <field_os2_display_list_spot is_array="true">
             <item>screen_1</item>
             <item>screen_2</item>
